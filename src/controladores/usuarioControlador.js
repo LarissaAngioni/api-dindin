@@ -82,7 +82,46 @@ const login = async (req, res) => {
   }
 };
 
+const detalharUsuario = async (req, res) => {
+  const usuario = req.usuario;
+
+  try {
+    const { rows } = await pool.query(
+      "select id, nome, email from usuarios where id = $1",
+      [usuario.id]
+    );
+
+    return res.json(rows[0]);
+  } catch (error) {
+    return res.status(500).json({ mensagem: "Erro interno do servidor." });
+  }
+};
+
+const atualizarUsuario = async (req, res) => {
+  const usuario = req.usuario;
+  const usuarioAtualizado = req.body;
+
+  try {
+    const emailExiste = await pool.query(
+      "select * from usuarios where email = $1",
+      [usuarioAtualizado.email]
+    );
+
+    if (emailExiste.rowCount > 0) {
+      return res.status(400).json({
+        mensagem:
+          "O e-mail informado já está sendo utilizado por outro usuário.",
+      });
+    }
+
+    const senhaCriptografada = await bcrypt.hash();
+  } catch (error) {
+    return res.status(500).json({ mensagem: "Erro interno do servidor." });
+  }
+};
 module.exports = {
   cadastrarUsuario,
   login,
+  detalharUsuario,
+  atualizarUsuario,
 };
