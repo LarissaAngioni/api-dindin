@@ -4,6 +4,7 @@ const {
   login,
   detalharUsuario,
   atualizarUsuario,
+  listarCategorias,
 } = require("./controladores/usuarioControlador");
 const checaToken = require("./intermediarios/checaToken");
 
@@ -16,5 +17,7 @@ rotas.use(checaToken);
 
 rotas.get("/usuario", detalharUsuario);
 rotas.put("/usuario", atualizarUsuario);
+
+rotas.get("/categoria", listarCategorias);
 
 module.exports = rotas;
