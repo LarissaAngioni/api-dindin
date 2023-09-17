@@ -1,5 +1,7 @@
 const pool = require("../conexao");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const senhaJwt = require("../senhaJwt");
 
 const cadastrarUsuario = async (req, res) => {
   const { nome, email, senha } = req.body;
@@ -40,6 +42,47 @@ const cadastrarUsuario = async (req, res) => {
   }
 };
 
+const login = async (req, res) => {
+  const { email, senha } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ mensagem: "O campo email é obrigatório" });
+  }
+  if (!senha) {
+    return res.status(400).json({ mensagem: "O campo senha é obrigatório" });
+  }
+
+  try {
+    const usuarioExiste = await pool.query(
+      "select * from usuarios where email = $1",
+      [email]
+    );
+
+    if (usuarioExiste.rowCount === 0) {
+      return res
+        .status(400)
+        .json({ mensagem: "Usuário e/ou senha inválido(s)." });
+    }
+
+    const { senha: senhaUsuario, ...usuario } = usuarioExiste.rows[0];
+
+    const senhaCorreta = await bcrypt.compare(senha, senhaUsuario);
+
+    if (!senhaCorreta) {
+      return res
+        .status(400)
+        .json({ mensagem: "Usuário e/ou senha inválido(s)." });
+    }
+
+    const token = jwt.sign({ id: usuario.id }, senhaJwt, { expiresIn: "8h" });
+
+    return res.json({ usuario, token });
+  } catch (error) {
+    return res.status(500).json({ mensagem: "Erro interno do servidor." });
+  }
+};
+
 module.exports = {
   cadastrarUsuario,
+  login,
 };
