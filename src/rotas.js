@@ -6,6 +6,9 @@ const {
   atualizarUsuario,
   listarCategorias,
 } = require("./controladores/usuarioControlador");
+const {
+  listarTransaçaoes
+} = require("./controladores/trasacaoControlador")
 const checaToken = require("./intermediarios/checaToken");
 
 const rotas = express();
@@ -19,5 +22,7 @@ rotas.get("/usuario", detalharUsuario);
 rotas.put("/usuario", atualizarUsuario);
 
 rotas.get("/categoria", listarCategorias);
+
+rotas.get("/transacao" ,listarTransaçaoes)
 
 module.exports = rotas;
