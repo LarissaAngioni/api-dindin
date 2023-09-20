@@ -7,7 +7,8 @@ const {
   listarCategorias,
 } = require("./controladores/usuarioControlador");
 const {
-  listarTransaçaoes
+  listarTransacoes,
+  cadastrarTransacoes
 } = require("./controladores/trasacaoControlador")
 const checaToken = require("./intermediarios/checaToken");
 
@@ -23,6 +24,7 @@ rotas.put("/usuario", atualizarUsuario);
 
 rotas.get("/categoria", listarCategorias);
 
-rotas.get("/transacao" ,listarTransaçaoes)
+rotas.get("/transacao" ,listarTransacoes);
+rotas.post("/transacao", cadastrarTransacoes)
 
 module.exports = rotas;
