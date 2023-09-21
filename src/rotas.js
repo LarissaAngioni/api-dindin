@@ -10,7 +10,9 @@ const {
   listarTransacoes,
   cadastrarTransacoes,
   detalharTransacao,
-  obterExtratoTransacoes
+  obterExtratoTransacoes,
+  atualizarTransacao,
+  deletarTransacao
 } = require("./controladores/trasacaoControlador")
 const checaToken = require("./intermediarios/checaToken");
 
@@ -30,7 +32,7 @@ rotas.get("/transacao" ,listarTransacoes);
 rotas.get("/transacao/extrato", obterExtratoTransacoes);
 rotas.get("/transacao/:id", detalharTransacao);
 rotas.post("/transacao", cadastrarTransacoes);
-rotas.put("/transacao/:id", );
-rotas.delete("/transacao/:id", );
+rotas.put("/transacao/:id", atualizarTransacao);
+rotas.delete("/transacao/:id", deletarTransacao );
 
 module.exports = rotas;

@@ -120,12 +120,119 @@ const obterExtratoTransacoes = async (req, res) => {
     console.error(error.message);
     return res.status(500).json({ mensagem: "Erro interno do servidor." });
   }
+
 };
+
+
+const atualizarTransacao = async (req, res) => {
+  const usuario = req.usuario;
+  let { id } = req.params
+  const { descricao, valor,  data ,categoria_id, tipo } = req.body;
+  
+  try {
+    if (!descricao) {
+      return res.status(400).json({ mensagem: "O campo descrição é obrigatório" });
+    }
+    if (!valor) {
+      return res.status(400).json({ mensagem: "O campo valor é obrigatório" });
+    }
+    if (!data) {
+      return res.status(400).json({ mensagem: "O campo data é obrigatório" });
+    }
+    if (!categoria_id) {
+      return res.status(400).json({ mensagem: "O campo Categoria Id é obrigatório" });
+    }
+    if (!tipo) {
+      return res.status(400).json({ mensagem: "O campo tipo é obrigatório" });
+    }
+
+
+    if (valor <= 0) {
+      return res.status(400).json({ mensagem: "O campo Valor tem que ser maior do que zero " });
+    }
+
+    if (tipo !== "entrada" && tipo !== "saida") {
+      return res.status(400).json({ mensagem: "O campo tipo tem que ser entrada ou saida" });
+    }
+
+    const { rows, rowCount } = await pool.query(
+			'select * from transacoes where id = $1',
+			[id]
+		)
+
+		if (rowCount < 1) {
+			return res.status(404).json({ mensagem: 'transação não encontrada' })
+		}
+
+
+    if (usuario.id !== rows[0].usuario_id){
+      return res.status(404).json({ mensagem: 'Transação não pertence a este usuario' })
+    }
+
+    
+
+    const atualizar = await pool.query(
+      `update transacoes
+      set descricao = $1,
+      valor = $2,
+      data = $3,
+      categoria_id = $4,
+      tipo = $5
+      where id = $6`,
+      [
+        descricao,
+        valor,
+        data,
+        categoria_id,
+        tipo,
+        id
+      ]
+    );
+
+    return res.status(200).json();
+  } catch (error) {
+    return res.status(500).json({ mensagem: "Erro interno do servidor." });
+  }
+};
+
+const deletarTransacao = async (req, res) => {
+  const usuario = req.usuario;
+  let { id } = req.params
+  
+
+  try {
+    const { rows, rowCount } = await pool.query(
+			'select * from transacoes where id = $1',
+			[id]
+		)
+
+		if (rowCount < 1) {
+			return res.status(404).json({ mensagem: 'transação não encontrada' })
+		}
+
+
+    if (usuario.id !== rows[0].usuario_id){
+      return res.status(404).json({ mensagem: 'Transação não pertence a este usuario' })
+    }
+
+    const deletarTransacao = await pool.query(
+      `delete from transacoes where id = $1`, [id]
+    )
+
+    return res.status(201).json(rows[0])
+
+  } catch (error) {
+    return res.status(500).json({ mensagem: "Erro interno do servidor." });
+  }
+}
+
+
 
 module.exports = {
   listarTransacoes,
   cadastrarTransacoes,
   detalharTransacao,
   obterExtratoTransacoes,
-
+  atualizarTransacao,
+  deletarTransacao
 }
