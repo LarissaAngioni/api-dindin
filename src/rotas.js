@@ -28,7 +28,9 @@ rotas.get("/categoria", listarCategorias);
 
 rotas.get("/transacao" ,listarTransacoes);
 rotas.get("/transacao/extrato", obterExtratoTransacoes);
-rotas.get("/transacao/:id", detalharTransacao)
+rotas.get("/transacao/:id", detalharTransacao);
 rotas.post("/transacao", cadastrarTransacoes);
+rotas.put("/transacao/:id", );
+rotas.delete("/transacao/:id", );
 
 module.exports = rotas;

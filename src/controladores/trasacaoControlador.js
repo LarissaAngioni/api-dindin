@@ -77,6 +77,7 @@ const cadastrarTransacoes = async (req, res) => {
 
 const detalharTransacao = async (req, res) => {
   let { id } = req.params
+  const usuario = req.usuario;
 
   try {
 		const { rows, rowCount } = await pool.query(
@@ -87,6 +88,11 @@ const detalharTransacao = async (req, res) => {
 		if (rowCount < 1) {
 			return res.status(404).json({ mensagem: 'transação não encontrada' })
 		}
+
+
+    if (usuario.id !== rows[0].usuario_id){
+      return res.status(404).json({ mensagem: 'Transação não pertence a este usuario' })
+    }
 
 		return res.json(rows[0])
 	} catch (error) {
@@ -120,5 +126,6 @@ module.exports = {
   listarTransacoes,
   cadastrarTransacoes,
   detalharTransacao,
-  obterExtratoTransacoes
+  obterExtratoTransacoes,
+
 }
