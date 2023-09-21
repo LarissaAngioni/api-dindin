@@ -8,7 +8,9 @@ const {
 } = require("./controladores/usuarioControlador");
 const {
   listarTransacoes,
-  cadastrarTransacoes
+  cadastrarTransacoes,
+  detalharTransacao,
+  obterExtratoTransacoes
 } = require("./controladores/trasacaoControlador")
 const checaToken = require("./intermediarios/checaToken");
 
@@ -25,6 +27,8 @@ rotas.put("/usuario", atualizarUsuario);
 rotas.get("/categoria", listarCategorias);
 
 rotas.get("/transacao" ,listarTransacoes);
-rotas.post("/transacao", cadastrarTransacoes)
+rotas.get("/transacao/extrato", obterExtratoTransacoes);
+rotas.get("/transacao/:id", detalharTransacao)
+rotas.post("/transacao", cadastrarTransacoes);
 
 module.exports = rotas;

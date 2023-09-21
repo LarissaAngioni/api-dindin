@@ -75,17 +75,50 @@ const cadastrarTransacoes = async (req, res) => {
   }
 }
 
+const detalharTransacao = async (req, res) => {
+  let { id } = req.params
+
+  try {
+		const { rows, rowCount } = await pool.query(
+			'select * from transacoes where id = $1',
+			[id]
+		)
+
+		if (rowCount < 1) {
+			return res.status(404).json({ mensagem: 'transação não encontrada' })
+		}
+
+		return res.json(rows[0])
+	} catch (error) {
+		return res.status(500).json('Erro interno do servidor')
+	}
+}
+
 const obterExtratoTransacoes = async (req, res) => {
   const usuario = req.usuario;
 
   try {
+    const { rows } = await pool.query(
+      "SELECT SUM(CASE WHEN tipo = 'entrada' THEN valor ELSE 0 END) AS entrada, SUM(CASE WHEN tipo = 'saida' THEN valor ELSE 0 END) AS saida FROM transacoes WHERE usuario_id = $1",
+      [usuario.id]
+    );
+    
 
+    const extrato = {
+      entrada: parseFloat(rows[0].entrada || 0),
+      saida: parseFloat(rows[0].saida || 0),
+    };
+
+    return res.status(200).json(extrato);
   } catch (error) {
-
+    console.error(error.message);
+    return res.status(500).json({ mensagem: "Erro interno do servidor." });
   }
-}
+};
 
 module.exports = {
   listarTransacoes,
-  cadastrarTransacoes
+  cadastrarTransacoes,
+  detalharTransacao,
+  obterExtratoTransacoes
 }
